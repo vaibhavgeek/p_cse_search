@@ -2,10 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Search</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reel & TikTok Search</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+      color: #1a1a1a;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0 0 16px;
+    }
+    .tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 2px solid #e5e5e5;
+      margin-bottom: 20px;
+    }
+    .tab {
+      background: none;
+      border: none;
+      padding: 10px 18px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      color: #666;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab:hover { color: #1a1a1a; }
+    .tab.active {
+      color: #1a1a1a;
+      border-bottom-color: #1a1a1a;
+    }
+    #search-mount { min-height: 200px; }
+  </style>
 </head>
 <body>
-  <script async src="https://cse.google.com/cse.js?cx=013354601007441521110:enwkzivtj-o"></script>
-  <div class="gcse-search"></div>
+  <h1>Search</h1>
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-cx="013354601007441521110:enwkzivtj-o" role="tab">Instagram Reels</button>
+    <button class="tab" data-cx="261ccab135254441d" role="tab">TikTok</button>
+  </div>
+  <div id="search-mount"></div>
+
+  <script>
+    (function () {
+      var mount = document.getElementById('search-mount');
+      var tabs = document.querySelectorAll('.tab');
+      var loadedCx = {};
+
+      function render(cx) {
+        // Clear previous element
+        mount.innerHTML = '';
+        var el = document.createElement('div');
+        el.className = 'gcse-search';
+        mount.appendChild(el);
+
+        if (loadedCx[cx]) {
+          // Script for this cx already loaded — just re-render
+          if (window.google && google.search && google.search.cse && google.search.cse.element) {
+            google.search.cse.element.render({ div: el, tag: 'search' });
+          }
+          return;
+        }
+
+        // First time we see this cx: load its cse.js
+        loadedCx[cx] = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://cse.google.com/cse.js?cx=' + encodeURIComponent(cx);
+        document.head.appendChild(s);
+      }
+
+      tabs.forEach(function (t) {
+        t.addEventListener('click', function () {
+          tabs.forEach(function (x) { x.classList.remove('active'); });
+          t.classList.add('active');
+          render(t.getAttribute('data-cx'));
+        });
+      });
+
+      // Initial render: first tab
+      render(tabs[0].getAttribute('data-cx'));
+    })();
+  </script>
 </body>
 </html>
