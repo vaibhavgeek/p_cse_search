@@ -117,6 +117,82 @@
     .reel-download-btn:active { transform: translateY(0); }
     .reel-download-btn:disabled { opacity: 0.7; cursor: wait; }
 
+    /* Extract JSON button — sits next to Copy link */
+    .reel-extract-btn {
+      position: absolute;
+      top: 12px;
+      right: 116px; /* leave room for Copy link (~96px + gap) */
+      background: #059669;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+      transition: background 0.15s, transform 0.1s;
+      box-shadow: 0 1px 3px rgba(5, 150, 105, 0.3);
+    }
+    .reel-extract-btn:hover { background: #047857; transform: translateY(-1px); }
+    .reel-extract-btn:active { transform: translateY(0); }
+    .reel-extract-btn:disabled { opacity: 0.7; cursor: wait; }
+
+    /* JSON output panel */
+    .reel-json-panel {
+      margin-top: 12px;
+      padding: 12px;
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre;
+      border: 1px solid #1e293b;
+    }
+    .reel-json-panel .k { color: #93c5fd; }
+    .reel-json-panel .s { color: #86efac; }
+    .reel-json-panel .n { color: #fca5a5; }
+    .reel-json-panel .err { color: #fca5a5; }
+
+    /* API-key setup banner */
+    .api-key-banner {
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+    }
+    .api-key-banner input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .api-key-banner button {
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .api-key-banner.ok { background: #d1fae5; border-color: #6ee7b7; }
+    .api-key-banner a { color: #4f46e5; }
+
     /* Pagination */
     .gsc-cursor-page {
       border: 1px solid #e5e7eb !important;
@@ -135,6 +211,17 @@
 </head>
 <body>
   <h1>Search</h1>
+
+  <div id="api-key-banner" class="api-key-banner" hidden>
+    <span id="api-key-msg">🔑 Paste your OpenAI API key to enable the "Extract JSON" button.
+      <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">Get one here</a>.
+      Stored only in your browser (localStorage).
+    </span>
+    <input id="api-key-input" type="password" placeholder="sk-..." autocomplete="off" spellcheck="false">
+    <button id="api-key-save" type="button">Save</button>
+    <button id="api-key-clear" type="button" hidden>Clear</button>
+  </div>
+
   <div class="tabs" role="tablist">
     <button class="tab active" data-cx="013354601007441521110:enwkzivtj-o" role="tab">Instagram Reels</button>
     <button class="tab" data-cx="261ccab135254441d" role="tab">TikTok</button>
@@ -273,6 +360,281 @@
       }
 
       var mo = new MutationObserver(addButtons);
+      mo.observe(document.body, { childList: true, subtree: true });
+    })();
+  </script>
+
+  <script>
+    // API key management: stored in localStorage, banner UI to set/clear.
+    (function () {
+      var KEY_STORAGE = 'openai_api_key';
+      var banner = document.getElementById('api-key-banner');
+      var msg = document.getElementById('api-key-msg');
+      var input = document.getElementById('api-key-input');
+      var saveBtn = document.getElementById('api-key-save');
+      var clearBtn = document.getElementById('api-key-clear');
+
+      window.getApiKey = function () {
+        try { return localStorage.getItem(KEY_STORAGE) || ''; }
+        catch (e) { return ''; }
+      };
+
+      function render() {
+        var key = window.getApiKey();
+        banner.hidden = false;
+        if (key) {
+          banner.classList.add('ok');
+          msg.innerHTML = '✓ OpenAI key saved (' +
+            key.slice(0, 7) + '…' + key.slice(-4) +
+            '). Click "Extract JSON" on any result.';
+          input.hidden = true;
+          saveBtn.hidden = true;
+          clearBtn.hidden = false;
+        } else {
+          banner.classList.remove('ok');
+          msg.innerHTML = '🔑 Paste your OpenAI API key to enable "Extract JSON". ' +
+            '<a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">Get one</a>. ' +
+            'Stored only in your browser.';
+          input.hidden = false;
+          saveBtn.hidden = false;
+          clearBtn.hidden = true;
+        }
+      }
+
+      saveBtn.addEventListener('click', function () {
+        var v = (input.value || '').trim();
+        if (!v.startsWith('sk-')) {
+          input.style.borderColor = '#e11d48';
+          input.placeholder = 'Must start with sk-...';
+          input.value = '';
+          return;
+        }
+        try { localStorage.setItem(KEY_STORAGE, v); } catch (e) {}
+        input.value = '';
+        render();
+      });
+
+      clearBtn.addEventListener('click', function () {
+        try { localStorage.removeItem(KEY_STORAGE); } catch (e) {}
+        render();
+      });
+
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') saveBtn.click();
+      });
+
+      render();
+    })();
+  </script>
+
+  <script>
+    // LLM extraction: on-click, send the result card's text to OpenAI and
+    // render a JSON badge under the card.
+    //
+    // Token-cost strategy (gpt-4o-mini: $0.15/1M in, $0.60/1M out):
+    //   1. Extract url/username/shortcode client-side via regex (0 tokens).
+    //      Only send the snippet to the LLM.
+    //   2. Truncate snippet to 300 chars.
+    //   3. Terse one-line system prompt.
+    //   4. Cap output at 200 tokens.
+    //   5. Cache extractions in localStorage keyed by URL — re-click is free.
+    (function () {
+      var SVG_SPARK =
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>';
+      var CACHE_KEY = 'reel_extract_cache_v1';
+      var SNIPPET_MAX = 300;
+
+      function loadCache() {
+        try { return JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); }
+        catch (e) { return {}; }
+      }
+      function saveCache(obj) {
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify(obj)); } catch (e) {}
+      }
+
+      // Regex-extract everything we can WITHOUT calling the LLM.
+      // Only the caption/hashtags/date need actual language understanding.
+      function clientSideFields(result) {
+        var link = result.querySelector('a.gs-title[href], a[data-ctorig]');
+        var url = link ? (link.getAttribute('data-ctorig') || link.href) : '';
+
+        var out = { url: url, username: null, shortcode: null, platform: null };
+
+        // Instagram: instagram.com/{username}/reel/{shortcode}/  OR
+        //            instagram.com/reel/{shortcode}/
+        var ig = url.match(/instagram\.com\/(?:([^\/]+)\/)?reel\/([^\/?#]+)/);
+        if (ig) {
+          out.platform = 'instagram';
+          out.username = ig[1] && ig[1] !== 'reel' ? ig[1] : null;
+          out.shortcode = ig[2];
+        }
+        // TikTok: tiktok.com/@{username}/video/{id}
+        var tt = url.match(/tiktok\.com\/@([^\/?#]+)\/video\/(\d+)/);
+        if (tt) {
+          out.platform = 'tiktok';
+          out.username = tt[1];
+          out.shortcode = tt[2];
+        }
+        return out;
+      }
+
+      function getSnippet(result) {
+        var el = result.querySelector('.gs-snippet, .gs-bidi-start-align.gs-snippet');
+        var text = el ? (el.textContent || '').replace(/\s+/g, ' ').trim() : '';
+        if (text.length > SNIPPET_MAX) text = text.slice(0, SNIPPET_MAX) + '…';
+        return text;
+      }
+
+      function highlight(json) {
+        return json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/("(\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+          function (match) {
+            var cls = 'n';
+            if (/^"/.test(match)) cls = /:$/.test(match) ? 'k' : 's';
+            else if (/true|false|null/.test(match)) cls = 'n';
+            return '<span class="' + cls + '">' + match + '</span>';
+          });
+      }
+
+      function ensurePanel(result) {
+        var panel = result.querySelector('.reel-json-panel');
+        if (!panel) {
+          panel = document.createElement('pre');
+          panel.className = 'reel-json-panel';
+          result.appendChild(panel);
+        }
+        return panel;
+      }
+      function renderPanel(result, obj) {
+        ensurePanel(result).innerHTML = highlight(JSON.stringify(obj, null, 2));
+      }
+      function renderError(result, msg) {
+        ensurePanel(result).innerHTML = '<span class="err">' + msg + '</span>';
+      }
+
+      async function extract(result, btn) {
+        var apiKey = window.getApiKey();
+        if (!apiKey) {
+          renderError(result, 'No API key set. Paste one in the banner above.');
+          return;
+        }
+
+        var base = clientSideFields(result);
+        var snippet = getSnippet(result);
+
+        // Cache hit? Re-render for free.
+        var cache = loadCache();
+        var cacheKey = base.url || snippet;
+        if (cacheKey && cache[cacheKey]) {
+          renderPanel(result, cache[cacheKey]);
+          return;
+        }
+
+        // Nothing to send? Regex got everything we can get. Skip the LLM.
+        if (!snippet) {
+          var merged = Object.assign({ caption: null, hashtags: [], date: null }, base);
+          if (cacheKey) { cache[cacheKey] = merged; saveCache(cache); }
+          renderPanel(result, merged);
+          return;
+        }
+
+        btn.disabled = true;
+        var originalHtml = btn.innerHTML;
+        btn.innerHTML = SVG_SPARK + '<span>Extracting…</span>';
+
+        // Minimal prompt: just ask for the 3 fields we can't get client-side.
+        var systemPrompt =
+          'Extract from social-media snippet. Reply ONLY JSON: ' +
+          '{"caption":string|null,"hashtags":string[],"date":string|null}. ' +
+          'hashtags without #. date ISO 8601 or null.';
+
+        try {
+          var res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + apiKey,
+            },
+            body: JSON.stringify({
+              model: 'gpt-4o-mini',
+              temperature: 0,
+              max_tokens: 200,
+              response_format: { type: 'json_object' },
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: snippet },
+              ],
+            }),
+          });
+
+          if (!res.ok) {
+            var errBody = await res.text();
+            renderError(result, 'OpenAI ' + res.status + ': ' + errBody.slice(0, 300));
+            return;
+          }
+
+          var data = await res.json();
+          var content = data.choices && data.choices[0] &&
+                        data.choices[0].message && data.choices[0].message.content;
+          if (!content) { renderError(result, 'Empty response.'); return; }
+
+          var parsed;
+          try { parsed = JSON.parse(content); }
+          catch (e) {
+            renderError(result, 'Model did not return JSON:\n' + content);
+            return;
+          }
+
+          // Merge LLM output with client-side fields — LLM never touches
+          // url/username/shortcode/platform.
+          var merged = Object.assign({}, base, {
+            caption:  parsed.caption  != null ? parsed.caption  : null,
+            hashtags: Array.isArray(parsed.hashtags) ? parsed.hashtags : [],
+            date:     parsed.date     != null ? parsed.date     : null,
+          });
+
+          // Cost telemetry, one-line, dev console only.
+          if (data.usage) {
+            console.log(
+              '[extract] tokens: in=' + data.usage.prompt_tokens +
+              ' out=' + data.usage.completion_tokens +
+              ' ~ $' + (
+                (data.usage.prompt_tokens * 0.15 +
+                 data.usage.completion_tokens * 0.60) / 1e6
+              ).toFixed(6)
+            );
+          }
+
+          if (cacheKey) { cache[cacheKey] = merged; saveCache(cache); }
+          renderPanel(result, merged);
+        } catch (err) {
+          renderError(result, 'Network error: ' + (err && err.message ? err.message : err));
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+        }
+      }
+
+      function addExtractButtons() {
+        document.querySelectorAll('.gsc-webResult.gsc-result').forEach(function (result) {
+          if (result.querySelector('.reel-extract-btn')) return;
+
+          var btn = document.createElement('button');
+          btn.className = 'reel-extract-btn';
+          btn.type = 'button';
+          btn.innerHTML = SVG_SPARK + '<span>Extract JSON</span>';
+
+          btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            extract(result, btn);
+          });
+
+          result.appendChild(btn);
+        });
+      }
+
+      var mo = new MutationObserver(addExtractButtons);
       mo.observe(document.body, { childList: true, subtree: true });
     })();
   </script>
