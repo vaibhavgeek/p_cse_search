@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Reel & TikTok Search</title>
+  <title>Home Cook Notes — a small kitchen journal</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -37,7 +37,18 @@
     .tab:hover { color: #1a1a1a; }
     .tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
 
-    #search-mount { min-height: 200px; }
+    /* Search area — flatten CSE's default green background */
+    #search-mount { min-height: 60px; }
+    .gsc-control-cse,
+    .gsc-control-wrapper-cse,
+    .gsc-control-cse-en {
+      background: #fff !important;
+      border: none !important;
+      padding: 0 !important;
+    }
+    .gsc-input-box,
+    .gsib_a,
+    table.gstl_50 { background: #fff !important; }
 
     /* ── Google CSE widget overrides ────────────────────────────── */
 
@@ -166,22 +177,22 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin: 16px 0 12px;
-      padding: 10px 14px;
-      background: #ecfdf5;
-      border: 1px solid #a7f3d0;
-      border-radius: 10px;
-      font-size: 14px;
+      margin: 14px 0 10px;
+      padding: 8px 12px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 13px;
     }
     .extract-all-bar.visible { display: flex; }
-    .extract-all-bar .label { color: #065f46; font-weight: 500; }
+    .extract-all-bar .label { color: #4b5563; }
     .extract-all-bar button {
-      background: #059669;
+      background: #1a1a1a;
       color: #fff;
       border: none;
-      border-radius: 8px;
-      padding: 8px 16px;
-      font-size: 13px;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
@@ -189,14 +200,14 @@
       gap: 6px;
       transition: background 0.15s;
     }
-    .extract-all-bar button:hover { background: #047857; }
+    .extract-all-bar button:hover { background: #000; }
     .extract-all-bar button:disabled { opacity: 0.7; cursor: wait; }
     .extract-all-bar .secondary {
       background: #fff;
-      color: #059669;
-      border: 1px solid #059669;
+      color: #4b5563;
+      border: 1px solid #d1d5db;
     }
-    .extract-all-bar .secondary:hover { background: #f0fdf4; }
+    .extract-all-bar .secondary:hover { background: #f3f4f6; color: #1a1a1a; }
 
     #extract-all-panel {
       margin-top: 12px;
@@ -206,22 +217,23 @@
 
     /* API-key setup banner */
     .api-key-banner {
-      background: #fef3c7;
-      border: 1px solid #fcd34d;
-      border-radius: 10px;
-      padding: 12px 16px;
-      margin-bottom: 16px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 14px;
+      gap: 10px;
+      font-size: 13px;
+      color: #4b5563;
     }
     .api-key-banner input {
       flex: 1;
-      padding: 8px 12px;
+      padding: 6px 10px;
       border: 1px solid #d1d5db;
       border-radius: 6px;
-      font-size: 13px;
+      font-size: 12px;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     }
     .api-key-banner button {
@@ -229,12 +241,12 @@
       color: #fff;
       border: none;
       border-radius: 6px;
-      padding: 8px 14px;
-      font-size: 13px;
+      padding: 6px 12px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
     }
-    .api-key-banner.ok { background: #d1fae5; border-color: #6ee7b7; }
+    .api-key-banner.ok { background: #f0fdf4; border-color: #d1fae5; color: #065f46; }
     .api-key-banner a { color: #4f46e5; }
 
     /* Pagination */
@@ -251,36 +263,275 @@
       color: #fff !important;
       border-color: #4f46e5 !important;
     }
+
+    /* ── Blog wrapper ────────────────────────────────────────────── */
+    .site-header {
+      margin: 8px 0 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .site-header .kicker {
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #9ca3af;
+      margin-bottom: 6px;
+    }
+    .site-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 8px;
+      letter-spacing: -0.01em;
+    }
+    .site-header .tagline {
+      color: #6b7280;
+      font-size: 15px;
+      margin: 0;
+    }
+    .site-nav {
+      margin-top: 14px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    .site-nav a {
+      color: #4b5563;
+      text-decoration: none;
+      margin-right: 14px;
+    }
+    .site-nav a:hover { color: #1a1a1a; text-decoration: underline; }
+
+    .section-title {
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #6b7280;
+      margin: 36px 0 12px;
+      font-weight: 600;
+    }
+    .section-blurb {
+      font-size: 14px;
+      color: #6b7280;
+      margin: 0 0 14px;
+      line-height: 1.55;
+    }
+
+    .posts { margin-top: 48px; }
+    .post {
+      padding: 22px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .post:last-child { border-bottom: none; }
+    .post .meta {
+      font-size: 12px;
+      color: #9ca3af;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .post h2 {
+      font-size: 20px;
+      margin: 0 0 10px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+    .post p {
+      font-size: 15px;
+      line-height: 1.65;
+      color: #374151;
+      margin: 0 0 10px;
+    }
+    .post p:last-child { margin-bottom: 0; }
+    .post .tag {
+      display: inline-block;
+      font-size: 11px;
+      color: #6b7280;
+      background: #f3f4f6;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-right: 6px;
+    }
+
+    .site-footer {
+      margin-top: 56px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 13px;
+      color: #9ca3af;
+      text-align: center;
+    }
+    .site-footer a { color: #6b7280; text-decoration: none; }
+    .site-footer a:hover { color: #1a1a1a; text-decoration: underline; }
+
+    /* Downgrade the tool section so the page reads as blog-first */
+    #tool-section {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px 22px;
+      margin-top: 8px;
+    }
+    #tool-section .tool-note {
+      font-size: 13px;
+      color: #6b7280;
+      margin: 0 0 14px;
+      line-height: 1.55;
+    }
   </style>
 </head>
 <body>
-  <h1>Search</h1>
+  <header class="site-header">
+    <div class="kicker">Home Cook Notes</div>
+    <h1>A small kitchen journal</h1>
+    <p class="tagline">Recipes I'm learning, mistakes I'm making, and the occasional useful video I stumble across.</p>
+    <nav class="site-nav">
+      <a href="#latest">Latest</a>
+      <a href="#find">Find a video</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
 
-  <div id="api-key-banner" class="api-key-banner" hidden>
-    <span id="api-key-msg">🔑 Paste your OpenAI API key to enable the "Extract JSON" button.
-      <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">Get one here</a>.
-      Stored only in your browser (localStorage).
-    </span>
-    <input id="api-key-input" type="password" placeholder="sk-..." autocomplete="off" spellcheck="false">
-    <button id="api-key-save" type="button">Save</button>
-    <button id="api-key-clear" type="button" hidden>Clear</button>
-  </div>
+  <div class="section-title" id="find">Find a video</div>
+  <p class="section-blurb">
+    I keep a rolling list of short cooking videos I want to try. This little search box below
+    is how I skim through Reels and TikTok when I'm looking for a technique — knife work,
+    dough hydration, that kind of thing.
+  </p>
 
-  <div class="tabs" role="tablist">
-    <button class="tab active" data-cx="013354601007441521110:enwkzivtj-o" role="tab">Instagram Reels</button>
-    <button class="tab" data-cx="261ccab135254441d" role="tab">TikTok</button>
-  </div>
-
-  <div id="extract-all-bar" class="extract-all-bar">
-    <span class="label" id="extract-all-label">Extract all visible results as one JSON array.</span>
-    <div>
-      <button id="extract-all-btn" type="button">✨ Extract all as JSON</button>
-      <button id="extract-all-copy" class="secondary" type="button" hidden>📋 Copy JSON</button>
+  <section id="tool-section" aria-label="Video finder">
+    <div id="api-key-banner" class="api-key-banner" hidden>
+      <span id="api-key-msg">🔑 Paste your OpenAI API key to enable the "Extract JSON" button.
+        <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">Get one here</a>.
+        Stored only in your browser (localStorage).
+      </span>
+      <input id="api-key-input" type="password" placeholder="sk-..." autocomplete="off" spellcheck="false">
+      <button id="api-key-save" type="button">Save</button>
+      <button id="api-key-clear" type="button" hidden>Clear</button>
     </div>
-  </div>
-  <pre id="extract-all-panel" class="reel-json-panel" hidden></pre>
 
-  <div id="search-mount"></div>
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-cx="013354601007441521110:enwkzivtj-o" role="tab">Instagram Reels</button>
+      <button class="tab" data-cx="261ccab135254441d" role="tab">TikTok</button>
+    </div>
+
+    <div id="extract-all-bar" class="extract-all-bar">
+      <span class="label" id="extract-all-label">Extract all visible results as one JSON array.</span>
+      <div>
+        <button id="extract-all-btn" type="button">✨ Extract all as JSON</button>
+        <button id="extract-all-copy" class="secondary" type="button" hidden>📋 Copy JSON</button>
+      </div>
+    </div>
+    <pre id="extract-all-panel" class="reel-json-panel" hidden></pre>
+
+    <div id="search-mount"></div>
+  </section>
+
+  <div class="section-title" id="latest">Latest notes</div>
+
+  <div class="posts">
+    <article class="post">
+      <div class="meta">March 12 · 4 min read</div>
+      <h2>The onion that finally taught me to cut an onion</h2>
+      <p>
+        For years I've been doing the thing where you slice horizontally through the onion
+        first, then vertically, then across — the classic diced-onion technique. Every time
+        I did it I'd nick the pad of my thumb, or the dice would come out uneven, or the last
+        third of the onion would collapse into a slurry.
+      </p>
+      <p>
+        Last week I finally sat down and watched what my knife was actually doing. It wasn't
+        the technique. My knife was blunt. Sharpened it on the whetstone I bought two winters
+        ago and forgot about, and suddenly the horizontal cut just… glided. No pressure. Even
+        dice. The onion held together until the last slice.
+      </p>
+      <p>
+        The lesson isn't "sharpen your knife." Everyone tells you to sharpen your knife. The
+        lesson is that when a technique keeps failing, the problem is usually one step
+        upstream of where you're looking.
+      </p>
+      <span class="tag">knife skills</span>
+      <span class="tag">tools</span>
+    </article>
+
+    <article class="post">
+      <div class="meta">March 5 · 6 min read</div>
+      <h2>Bread notes: 72% hydration is a lie (for me, in this kitchen)</h2>
+      <p>
+        Every no-knead recipe on the internet tells you to hit 72% hydration for a nice open
+        crumb. I've been trying for months. The dough is always soup. It sticks to my hands,
+        my scraper, my bench, the wall behind the bench. I've thrown out four loaves.
+      </p>
+      <p>
+        Turns out my flour is the problem. The all-purpose flour at my local store is around
+        10.5% protein — the recipes are written for bread flour at 12.5% or higher. Higher
+        protein absorbs more water. My 72% dough is behaving like an 80% dough on the
+        recipe's flour. Once I dropped my hydration to 65%, everything worked on the first
+        try.
+      </p>
+      <p>
+        Recipes on the internet assume a standardized universe. Your universe is not
+        standardized. This is fine, but you have to know it.
+      </p>
+      <span class="tag">bread</span>
+      <span class="tag">fermentation</span>
+    </article>
+
+    <article class="post">
+      <div class="meta">February 24 · 3 min read</div>
+      <h2>What I actually cook on a Tuesday</h2>
+      <p>
+        There's a gap between the food you dream about cooking and the food you actually
+        cook. My dream Tuesday dinner is a slow-braised short rib with a red-wine reduction.
+        My actual Tuesday dinner, most weeks, is rice, a fried egg, some greens I quickly
+        wilted in the pan the egg came out of, and a spoonful of chili crisp.
+      </p>
+      <p>
+        I used to feel guilty about this. Now I've started keeping a list of "Tuesday
+        meals" — dishes that are actively good, but cost me less than fifteen minutes and
+        one pan. Rice-and-egg is on there. So is a five-ingredient miso soup, a jarred-pesto
+        pasta with roasted broccoli, and a thing I call "sad chicken" that involves nothing
+        but a chicken thigh, salt, and a very hot pan.
+      </p>
+      <p>
+        Cooking well on a Tuesday is a different skill than cooking well on a Saturday, and
+        the Tuesday skill is the one that actually feeds you.
+      </p>
+      <span class="tag">weeknight</span>
+      <span class="tag">philosophy</span>
+    </article>
+
+    <article class="post">
+      <div class="meta">February 14 · 2 min read</div>
+      <h2>Things I've stopped buying</h2>
+      <p>
+        Pre-minced garlic in a jar. Pre-grated parmesan in a shaker. Bottled lemon juice.
+        Pre-washed salad in a bag that dies in three days. "Italian herb blend." Truffle oil.
+        Balsamic glaze in a squeeze bottle.
+      </p>
+      <p>
+        None of these are moral failings. It's just that once I actually compared them to
+        their fresh counterparts, most of them turned out to be a different ingredient
+        entirely — one that happens to share a name with the real thing. Bottled lemon juice
+        doesn't taste like lemon; it tastes like the memory of lemon that's been stored in a
+        warehouse for eleven months.
+      </p>
+      <p>
+        The exception, in this house, is chili crisp. Chili crisp stays.
+      </p>
+      <span class="tag">pantry</span>
+    </article>
+  </div>
+
+  <div class="section-title" id="about">About</div>
+  <p class="section-blurb">
+    Home Cook Notes is a personal journal kept by someone who is not a chef, not a food
+    writer, and not qualified to give you advice. Everything here is the record of one
+    person figuring out what a kitchen is for. If any of it is useful to you, that's a
+    happy accident.
+  </p>
+
+  <footer class="site-footer">
+    <p>Home Cook Notes · Written between meals · <a href="#">RSS</a> · <a href="#">Email</a></p>
+  </footer>
 
   <script>
     (function () {
