@@ -8,16 +8,14 @@
     * { box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      margin: 0;
+      margin: 0 auto;
       padding: 24px;
       max-width: 900px;
-      margin: 0 auto;
       color: #1a1a1a;
+      background: #fafafa;
     }
-    h1 {
-      font-size: 20px;
-      margin: 0 0 16px;
-    }
+    h1 { font-size: 20px; margin: 0 0 16px; }
+
     .tabs {
       display: flex;
       gap: 4px;
@@ -37,11 +35,102 @@
       transition: color 0.15s, border-color 0.15s;
     }
     .tab:hover { color: #1a1a1a; }
-    .tab.active {
-      color: #1a1a1a;
-      border-bottom-color: #1a1a1a;
-    }
+    .tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+
     #search-mount { min-height: 200px; }
+
+    /* ── Google CSE widget overrides ────────────────────────────── */
+
+    /* Hide Google branding */
+    .gsc-branding,
+    .gcsc-branding,
+    .gsc-completion-container img[src*="branding"],
+    .gsc-adBlock,
+    .gsc-above-wrapper-area-container .gsc-result-info,
+    .gsc-tabsAreaInvisible + .gsc-refinementsAreaInvisible { display: none !important; }
+
+    /* Clean search box */
+    .gsc-input-box {
+      border: 1px solid #d1d5db !important;
+      border-radius: 10px !important;
+      box-shadow: none !important;
+      padding: 6px 10px !important;
+      background: #fff !important;
+    }
+    .gsc-input-box:focus-within {
+      border-color: #6366f1 !important;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+    }
+    input.gsc-input {
+      background-image: none !important;
+      font-size: 15px !important;
+    }
+    .gsc-search-button-v2 {
+      background: #1a1a1a !important;
+      border: 1px solid #1a1a1a !important;
+      border-radius: 10px !important;
+      padding: 10px 16px !important;
+      margin-left: 6px !important;
+    }
+    .gsc-search-button-v2:hover { background: #000 !important; }
+    .gsc-search-button-v2 svg { fill: #fff !important; }
+
+    /* Result cards */
+    .gsc-webResult.gsc-result {
+      border: 1px solid #e5e7eb !important;
+      border-radius: 12px !important;
+      background: #fff !important;
+      padding: 16px !important;
+      margin-bottom: 12px !important;
+      position: relative !important;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .gsc-webResult.gsc-result:hover {
+      border-color: #c7d2fe !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+    .gsc-webResult.gsc-result:not(:last-child) { border-bottom: 1px solid #e5e7eb !important; }
+    .gs-title { text-decoration: none !important; }
+    .gs-title b { color: #4f46e5 !important; }
+
+    /* Injected download button */
+    .reel-download-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+      transition: background 0.15s, transform 0.1s;
+      box-shadow: 0 1px 3px rgba(79, 70, 229, 0.3);
+    }
+    .reel-download-btn:hover { background: #4338ca; transform: translateY(-1px); }
+    .reel-download-btn:active { transform: translateY(0); }
+    .reel-download-btn:disabled { opacity: 0.7; cursor: wait; }
+
+    /* Pagination */
+    .gsc-cursor-page {
+      border: 1px solid #e5e7eb !important;
+      border-radius: 6px !important;
+      padding: 6px 10px !important;
+      margin: 0 2px !important;
+      color: #4f46e5 !important;
+      text-decoration: none !important;
+    }
+    .gsc-cursor-current-page {
+      background: #4f46e5 !important;
+      color: #fff !important;
+      border-color: #4f46e5 !important;
+    }
   </style>
 </head>
 <body>
@@ -91,6 +180,85 @@
 
       // Initial render: first tab
       render(tabs[0].getAttribute('data-cx'));
+    })();
+  </script>
+
+  <script>
+    // Inject a "Download" button into every search result (SaveMyReels trick).
+    // Google's CSE widget renders results asynchronously into the DOM, so we
+    // watch the whole body and add the button as soon as a result appears.
+    (function () {
+      var SVG_DOWNLOAD =
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
+      function copy(text, btn) {
+        var original = btn.innerHTML;
+        var done = function (ok) {
+          btn.innerHTML = ok ? '✓ Copied' : '✗ Copy failed';
+          setTimeout(function () { btn.innerHTML = original; }, 1400);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () { done(true); },
+                                                    function () { done(false); });
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          try { done(document.execCommand('copy')); }
+          catch (e) { done(false); }
+          document.body.removeChild(ta);
+        }
+      }
+
+      function addButtons() {
+        var results = document.querySelectorAll('.gsc-webResult.gsc-result');
+        results.forEach(function (result) {
+          if (result.querySelector('.reel-download-btn')) return; // already added
+
+          var link = result.querySelector('a.gs-title[href], a[data-ctorig]');
+          if (!link) return;
+
+          // Google mangles the outbound link with click-tracking. data-ctorig
+          // holds the true destination.
+          var url = link.getAttribute('data-ctorig') || link.href;
+          if (!url) return;
+
+          var btn = document.createElement('button');
+          btn.className = 'reel-download-btn';
+          btn.type = 'button';
+          btn.innerHTML = SVG_DOWNLOAD + '<span>Copy link</span>';
+          btn.title = url;
+
+          btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            copy(url, btn);
+          });
+
+          result.appendChild(btn);
+        });
+
+        // Also strip the Google branding row inside the autocomplete dropdown.
+        document.querySelectorAll('.gsc-completion-container img[src*="branding"]')
+          .forEach(function (img) {
+            var row = img.closest('tr');
+            if (row) row.style.display = 'none';
+          });
+
+        // Open results in a new tab.
+        document.querySelectorAll('.gs-title[href]').forEach(function (a) {
+          if (a.getAttribute('target') !== '_blank') {
+            a.setAttribute('target', '_blank');
+            a.setAttribute('rel', 'noopener noreferrer');
+          }
+        });
+      }
+
+      var mo = new MutationObserver(addButtons);
+      mo.observe(document.body, { childList: true, subtree: true });
     })();
   </script>
 </body>
