@@ -859,9 +859,11 @@
         // One-line system prompt. Ask ONLY for caption+date, keyed by index.
         // Returning an object with an "items" key is required because
         // response_format:json_object must be an object, not an array.
+        // The literal word "json" MUST appear somewhere in the messages when
+        // response_format:json_object is set, or OpenAI 400s.
         var systemPrompt =
-          'For each item {i,s} in the input, extract from snippet s. ' +
-          'Return {"items":[{"i":number,"caption":string|null,"date":string|null}]}. ' +
+          'Return JSON. For each item {i,s} in the input, extract from snippet s. ' +
+          'Shape: {"items":[{"i":number,"caption":string|null,"date":string|null}]}. ' +
           'date ISO 8601 if inferable, else null. Preserve i.';
 
         try {
